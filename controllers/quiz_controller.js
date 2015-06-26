@@ -12,3 +12,8 @@ exports.answer=function(req,res){
 	}
 };
 
+//GET /quizes/autor
+exports.autor=function(req,res){
+	res.render('quizes/autor', {autor:'Aranzazu Lloreda'});
+};
+

@@ -14,10 +14,23 @@ exports.load =function(req, res, next, quizId) {
 
 //GET/quizes
 exports.index=function(req,res){
+ var busqueda=req.query.search;
+
+
+
+if  (busqueda) {
+	texto  = busqueda.replace(" ", "%");
+	texto  ='%'+ texto +'%';
+	models.Quiz.findAll({where: ["lower(pregunta) like ?", texto], order: [['pregunta', 'DESC']]}).then(function(quizes){
+		res.render('quizes/index.ejs',{quizes:quizes});
+	}
+	).catch(function(error){next(error);})
+}else {
 	models.Quiz.findAll().then(function(quizes){
 		res.render('quizes/index.ejs',{quizes:quizes});
 	}
 	).catch(function(error){next(error);})
+}
 };
 
 

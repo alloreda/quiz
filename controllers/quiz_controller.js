@@ -53,3 +53,17 @@ exports.autor=function(req,res){
 	res.render('quizes/autor', {autor:'Aranzazu Lloreda'});
 };
 
+
+//GET /quizes/new
+exports.new=function(req,res){
+	var quiz=models.Quiz.build({pregunta:"Pregunta", respuesta:"Respuesta"});// crea objeto quiz
+	res.render('quizes/new', {quiz:quiz});
+};
+
+//POST /quizes/create
+exports.create=function(req,res){
+	var quiz=models.Quiz.build(req.body.quiz);// crea objeto quiz
+	
+	//guarda en DB los campos pregunta y respuesta de quiz
+	quiz.save({fields:["pregunta", "respuesta"]}).then(function(){res.redirect('/quizes');}); //Redireccion HTTP (URL relativo) lista de preguntas
+};

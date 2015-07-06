@@ -22,12 +22,12 @@ if  (busqueda) {
 	texto  = busqueda.replace(" ", "%");
 	texto  ='%'+ texto +'%';
 	models.Quiz.findAll({where: ["lower(pregunta) like ?", texto], order: [['pregunta', 'DESC']]}).then(function(quizes){
-		res.render('quizes/index.ejs',{quizes:quizes});
+		res.render('quizes/index.ejs',{quizes:quizes, errors:[]});
 	}
 	).catch(function(error){next(error);})
 }else {
 	models.Quiz.findAll().then(function(quizes){
-		res.render('quizes/index.ejs',{quizes:quizes});
+		res.render('quizes/index.ejs',{quizes:quizes, errors:[]});
 	}
 	).catch(function(error){next(error);})
 }
@@ -45,25 +45,33 @@ exports.answer=function(req,res){
 	if(req.query.respuesta === req.quiz.respuesta){
 			resultado='Correcto';
 	} 
-	res.render('quizes/answer', { quiz:req.quiz , respuesta:resultado });
+	res.render('quizes/answer', { quiz:req.quiz , respuesta:resultado, errors:[] });
 };
 
 //GET /quizes/autor
 exports.autor=function(req,res){
-	res.render('quizes/autor', {autor:'Aranzazu Lloreda'});
+	res.render('quizes/autor', {autor:'Aranzazu Lloreda', errors:[]});
 };
 
 
 //GET /quizes/new
 exports.new=function(req,res){
 	var quiz=models.Quiz.build({pregunta:"Pregunta", respuesta:"Respuesta"});// crea objeto quiz
-	res.render('quizes/new', {quiz:quiz});
+	res.render('quizes/new', {quiz:quiz, errors:[]});
 };
 
 //POST /quizes/create
 exports.create=function(req,res){
 	var quiz=models.Quiz.build(req.body.quiz);// crea objeto quiz
+
+	quiz.validate().then(
+			function(err){
+				if (err){
+					res.render('quizes/new', { quiz:quiz, errors:err.errors});
+				} else{
+					quiz.save({fields:["pregunta", "respuesta"]}).then (function(){res.redirect('/quizes')})	//guarda en DB los campos pregunta y respuesta de quiz
+				} //res.redirect:redireccion http a lista de preguntas
+			}
+	);
 	
-	//guarda en DB los campos pregunta y respuesta de quiz
-	quiz.save({fields:["pregunta", "respuesta"]}).then(function(){res.redirect('/quizes');}); //Redireccion HTTP (URL relativo) lista de preguntas
 };

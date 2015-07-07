@@ -20,5 +20,4 @@ router.get('/quizes/autor', 				quizController.autor);
 router.get('/quizes/new',					quizController.new);
 router.post('/quizes/create',				quizController.create);
 
-
 module.exports = router;

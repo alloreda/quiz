@@ -1,5 +1,6 @@
 
 var models=require('../models/models.js');
+var editado =0;
 
 //Autoload - factoriza el código si ruta incluye :quizId
 exports.load =function(req, res, next, quizId) {
@@ -7,7 +8,7 @@ exports.load =function(req, res, next, quizId) {
 
 				if (quiz) {
 					req.quiz=quiz;
-								errors=[]; //prueba
+					errors=[]; 
 					next();
 				} else { next(new Error('No existe quizId=' + quizId));}
 			}
@@ -16,14 +17,14 @@ exports.load =function(req, res, next, quizId) {
 
 //GET/quizes
 exports.index=function(req,res){
- var busqueda=req.query.search;
+ var busqueda=(req.query.search || '');
 
 
 
 if  (busqueda) {
 	texto  = busqueda.replace(" ", "%");
 	texto  ='%'+ texto +'%';
-	models.Quiz.findAll({where: ["lower(pregunta) like ?", texto], order: [['pregunta', 'DESC']]}).then(function(quizes){
+	models.Quiz.findAll({where: ["lower(pregunta) like ?", texto], order: [['pregunta', 'ASC']]}).then(function(quizes){
 		res.render('quizes/index.ejs',{quizes:quizes, errors:[]});
 	}
 	).catch(function(error){next(error);})
@@ -58,7 +59,7 @@ exports.autor=function(req,res){
 
 //GET /quizes/new
 exports.new=function(req,res){
-	var quiz=models.Quiz.build({pregunta:"Pregunta", respuesta:"Respuesta"});// crea objeto quiz
+	var quiz=models.Quiz.build({pregunta:"Pregunta", respuesta:"Respuesta", tema:"Otro"});// crea objeto quiz
 	res.render('quizes/new', {quiz:quiz, errors:[]});
 };
 
@@ -71,7 +72,7 @@ exports.create=function(req,res){
 				if (err){
 					res.render('quizes/new', { quiz:quiz, errors:err.errors});
 				} else{
-					quiz.save({fields:["pregunta", "respuesta"]}).then (function(){res.redirect('/quizes')})	//guarda en DB los campos pregunta y respuesta de quiz
+					quiz.save({fields:["pregunta", "respuesta", "tema"]}).then (function(){res.redirect('/quizes')})	//guarda en DB los campos pregunta,respuesta  y tema de quiz
 				} //res.redirect:redireccion http a lista de preguntas
 			}
 	);
@@ -81,6 +82,7 @@ exports.create=function(req,res){
 //GET /quizes/:id/edit
 exports.edit=function(req,res){
 	var quiz=req.quiz; //autoload de instancia de quiz
+	editado=1;
 	res.render('quizes/edit', {quiz:quiz, errors:[]});
 };
 

@@ -8,9 +8,23 @@
 	<body>
 	
 <label for="preg" class="rem">Pregunta:</label>
-<input type="text" id="preg" name="quiz[pregunta]" placeholder="<%= quiz.pregunta %>"/> <p>
+<input type="text" id="preg" name="quiz[pregunta]" <% if (editado===1) { %> value="<%= quiz.pregunta %>"<% } else{ %> placeholder="<%= quiz.pregunta %>"  <% } %> /> <p>
 <label for="resp" class="rem">Respuesta:</label>
-<input type="text" id="resp" name="quiz[respuesta]" placeholder="<%= quiz.respuesta %>"/> <p>
+<input type="text" id="resp" name="quiz[respuesta]" <% if (editado===1) { %> value="<%= quiz.respuesta %>" <% } else{ %> placeholder="<%= quiz.respuesta %>" <% } %> /> <p>
+
+<label for="tem" class="rem">Tema:</label>
+<select name="quiz[tema]">
+	<% var x = ['Otro', 'Humanidades', 'Ocio', 'Ciencia', 'Tecnologia']; %>
+	<% var i; for (i=0; i < x.length; i++)  { %>
+	<% if(x[i] === quiz.tema) { %>
+		<option value="<%= x[i] %>" selected><%= x[i] %></option>
+	<% } else { %>
+	<option value="<%= x[i] %>" ><%= x[i] %></option>
+	<% } %>
+	<% } %>
+</select> 
+
+
 <a href="/quizes"><button type="button">Cancelar</button></a>
 <input type="submit" value="Salvar">
 

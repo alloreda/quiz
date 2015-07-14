@@ -1,3 +1,11 @@
+//MW de autorización de accesos http restringidos. Si hay session abierta, se atiende el siguiente middleware (que es quizcontroller-definido en routes)
+exports.loginRequired=function(req,res,next){
+	if (req.session.user){
+		next();
+	}else{
+		res.redirect('/login');
+	}
+};
 
 
 //Get/login --Formulario de login

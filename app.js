@@ -9,6 +9,8 @@ var partials = require('express-partials');
 var methodOverride=require('method-override');
 var session=require('express-session');
 
+
+
 var routes = require('./routes/index');
 
 
@@ -29,6 +31,9 @@ app.use(session());
 app.use(methodOverride('_method'));
 app.use(express.static(path.join(__dirname, 'public')));
 
+
+
+
 //Helper dinamicos:
 app.use(function(req,res,next){
 
@@ -41,7 +46,27 @@ res.locals.session=req.session;
 next();
 });
 
+
+//Para que desloge a usuario sin han pasado 2 minutos de inactividad
+app.use(function(req, res, next) { //cada vez que haya una transaccion http
+
+    if (req.session.user){
+        if (Date.now()-req.session.user.tinicio > 2*60*1000){
+           console.log('Su sesión ha caducado');
+            delete req.session.user; 
+           
+        }
+        else{
+             req.session.user.tinicio=Date.now();
+        }
+    }
+    next(); // evalua el siguiente MW
+});
+
+
+
 app.use('/', routes);
+
 
 
 // catch 404 and forward to error handler
